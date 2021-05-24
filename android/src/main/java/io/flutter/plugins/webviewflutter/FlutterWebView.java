@@ -27,15 +27,36 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import io.flutter.Log;
+import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.view.ViewGroup;
+import android.webkit.GeolocationPermissions;
+import android.webkit.ValueCallback;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
+
+
+
 public class FlutterWebView implements PlatformView, MethodCallHandler {
   private static final String JS_CHANNEL_NAMES_FIELD = "javascriptChannelNames";
   private final WebView webView;
   private final MethodChannel methodChannel;
   private final FlutterWebViewClient flutterWebViewClient;
   private final Handler platformThreadHandler;
+  private final Activity mActivity;
+
+  private boolean isFullScreen = false;
+  private ValueCallback<Uri> uploadFile;
+  private ValueCallback<Uri[]> uploadFiles;
 
   // Verifies that a url opened by `Window.open` has a secure url.
   private class FlutterWebChromeClient extends WebChromeClient {
+    View myVideoView;
+    CustomViewCallback callback;
+
     @Override
     public boolean onCreateWindow(
         final WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
@@ -77,6 +98,85 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     public void onProgressChanged(WebView view, int progress) {
       flutterWebViewClient.onLoadingProgress(progress);
     }
+
+    @Override
+        public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+            callback.invoke(origin, true, false);
+            super.onGeolocationPermissionsShowPrompt(origin, callback);
+        }
+
+        /**
+         * 全屏播放配置
+         */
+        @Override
+        public void onShowCustomView(View view, CustomViewCallback customViewCallback) {
+            webView.setVisibility(View.GONE);
+            ViewGroup rootView = mActivity.findViewById(android.R.id.content);
+            rootView.addView(view);
+            myVideoView = view;
+            callback = customViewCallback;
+            isFullScreen = true;
+        }
+
+        @Override
+        public void onHideCustomView() {
+//            customViewHideTime = System.currentTimeMillis();
+            if (callback != null) {
+                callback.onCustomViewHidden();
+                callback = null;
+            }
+            if (myVideoView != null) {
+                ViewGroup rootView = mActivity.findViewById(android.R.id.content);
+                rootView.removeView(myVideoView);
+                myVideoView = null;
+                webView.setVisibility(View.VISIBLE);
+            }
+            isFullScreen = false;
+        }
+
+
+        // For Android 3.0+
+        public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType) {
+            Log.i("test", "openFileChooser");
+            FlutterWebView.this.uploadFile = uploadMsg;
+            openFileChooseProcess();
+        }
+
+        // For Android < 3.0
+        public void openFileChooser(ValueCallback<Uri> uploadMsgs) {
+            Log.i("test", "openFileChooser 2");
+            FlutterWebView.this.uploadFile = uploadMsgs;
+            openFileChooseProcess();
+        }
+
+        // For Android  > 4.1.1
+        public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType, String capture) {
+            Log.i("test", "openFileChooser 3");
+            FlutterWebView.this.uploadFile = uploadMsg;
+            openFileChooseProcess();
+        }
+
+        // For Android  >= 5.0
+        public boolean onShowFileChooser(WebView webView,
+                                         ValueCallback<Uri[]> filePathCallback,
+                                         WebChromeClient.FileChooserParams fileChooserParams) {
+            Log.i("test", "openFileChooser 4:" + filePathCallback.toString());
+            FlutterWebView.this.uploadFiles = filePathCallback;
+            openFileChooseProcess();
+            return true;
+        }
+
+        private void openFileChooseProcess() {
+            Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+            i.addCategory(Intent.CATEGORY_OPENABLE);
+            i.setType("*/*");
+            mActivity.startActivityForResult(Intent.createChooser(i, "test"), 1303);
+        }
+
+        @Override
+        public Bitmap getDefaultVideoPoster() {
+            return Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+        }
   }
 
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -86,8 +186,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       BinaryMessenger messenger,
       int id,
       Map<String, Object> params,
-      View containerView) {
+      View containerView,
+      Activity activity) {
 
+    mActivity = activity;
     DisplayListenerProxy displayListenerProxy = new DisplayListenerProxy();
     DisplayManager displayManager =
         (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
@@ -96,8 +198,8 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     Boolean usesHybridComposition = (Boolean) params.get("usesHybridComposition");
     webView =
         (usesHybridComposition)
-            ? new WebView(context)
-            : new InputAwareWebView(context, containerView);
+            ? new WebView(mActivity)
+            : new InputAwareWebView(mActivity, containerView);
 
     displayListenerProxy.onPostWebViewInitialization(displayManager);
 
