@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "FLTWebViewFlutterPlugin.h"
-#import "FLTCookieManager.h"
-#import "FlutterWebView.h"
+#import "FLTWebViewFlutterFullPlugin.h"
+#import "FLTCookieManagerFull.h"
+#import "FlutterWebViewFull.h"
 
-@implementation FLTWebViewFlutterPlugin
+@implementation FLTWebViewFlutterFullPlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   FLTWebViewFactory* webviewFactory =
       [[FLTWebViewFactory alloc] initWithMessenger:registrar.messenger];
   [registrar registerViewFactory:webviewFactory withId:@"plugins.flutter.io/webview"];
-  [FLTCookieManager registerWithRegistrar:registrar];
+  [FLTCookieManagerFull registerWithRegistrar:registrar];
 }
 
 @end

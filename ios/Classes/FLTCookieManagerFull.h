@@ -3,6 +3,12 @@
 // found in the LICENSE file.
 
 #import <Flutter/Flutter.h>
+#import <WebKit/WebKit.h>
 
-@interface FLTWebViewFlutterPlugin : NSObject <FlutterPlugin>
+NS_ASSUME_NONNULL_BEGIN
+
+@interface FLTCookieManagerFull : NSObject <FlutterPlugin>
+
 @end
+
+NS_ASSUME_NONNULL_END

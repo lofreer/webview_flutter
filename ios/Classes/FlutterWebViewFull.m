@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "FlutterWebView.h"
-#import "FLTWKNavigationDelegate.h"
-#import "FLTWKProgressionDelegate.h"
-#import "JavaScriptChannelHandler.h"
+#import "FlutterWebViewFull.h"
+#import "FLTWKNavigationDelegateFull.h"
+#import "FLTWKProgressionDelegateFull.h"
+#import "JavaScriptChannelHandlerFull.h"
 
 @implementation FLTWebViewFactory {
   NSObject<FlutterBinaryMessenger>* _messenger;
@@ -64,8 +64,8 @@
   NSString* _currentUrl;
   // The set of registered JavaScript channel names.
   NSMutableSet* _javaScriptChannelNames;
-  FLTWKNavigationDelegate* _navigationDelegate;
-  FLTWKProgressionDelegate* _progressionDelegate;
+  FLTWKNavigationDelegateFull* _navigationDelegate;
+  FLTWKProgressionDelegateFull* _progressionDelegate;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -95,7 +95,7 @@
                         inConfiguration:configuration];
 
     _webView = [[FLTWKWebView alloc] initWithFrame:frame configuration:configuration];
-    _navigationDelegate = [[FLTWKNavigationDelegate alloc] initWithChannel:_channel];
+    _navigationDelegate = [[FLTWKNavigationDelegateFull alloc] initWithChannel:_channel];
     _webView.UIDelegate = self;
     _webView.navigationDelegate = _navigationDelegate;
     __weak __typeof__(self) weakSelf = self;
@@ -336,7 +336,7 @@
       NSNumber* hasProgressTrackingValue = settings[key];
       bool hasProgressTracking = [hasProgressTrackingValue boolValue];
       if (hasProgressTracking) {
-        _progressionDelegate = [[FLTWKProgressionDelegate alloc] initWithWebView:_webView
+        _progressionDelegate = [[FLTWKProgressionDelegateFull alloc] initWithWebView:_webView
                                                                          channel:_channel];
       }
     } else if ([key isEqualToString:@"debuggingEnabled"]) {

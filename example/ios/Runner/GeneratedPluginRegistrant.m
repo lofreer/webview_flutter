@@ -10,8 +10,8 @@
 @import integration_test;
 #endif
 
-#if __has_include(<webview_flutter_full/FLTWebViewFlutterPlugin.h>)
-#import <webview_flutter_full/FLTWebViewFlutterPlugin.h>
+#if __has_include(<webview_flutter_full/FLTWebViewFlutterFullPlugin.h>)
+#import <webview_flutter_full/FLTWebViewFlutterFullPlugin.h>
 #else
 @import webview_flutter_full;
 #endif
@@ -20,7 +20,7 @@
 
 + (void)registerWithRegistry:(NSObject<FlutterPluginRegistry>*)registry {
   [IntegrationTestPlugin registerWithRegistrar:[registry registrarForPlugin:@"IntegrationTestPlugin"]];
-  [FLTWebViewFlutterPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTWebViewFlutterPlugin"]];
+  [FLTWebViewFlutterFullPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTWebViewFlutterFullPlugin"]];
 }
 
 @end

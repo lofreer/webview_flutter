@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "FLTWKProgressionDelegate.h"
+#import "FLTWKProgressionDelegateFull.h"
 
 NSString *const FLTWKEstimatedProgressKeyPath = @"estimatedProgress";
 
-@implementation FLTWKProgressionDelegate {
+@implementation FLTWKProgressionDelegateFull {
   FlutterMethodChannel *_methodChannel;
 }
 
