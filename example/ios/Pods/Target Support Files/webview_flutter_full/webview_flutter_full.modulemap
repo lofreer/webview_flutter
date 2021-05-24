@@ -1,0 +1,6 @@
+module webview_flutter_full {
+  umbrella header "webview_flutter_full-umbrella.h"
+
+  export *
+  module * { export * }
+}
