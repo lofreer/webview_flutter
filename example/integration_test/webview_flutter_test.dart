@@ -11,8 +11,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:webview_flutter/platform_interface.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_full/platform_interface.dart';
+import 'package:webview_flutter_full/webview_flutter.dart';
 import 'package:integration_test/integration_test.dart';
 
 void main() {

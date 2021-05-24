@@ -10,10 +10,10 @@
 @import integration_test;
 #endif
 
-#if __has_include(<webview_flutter/FLTWebViewFlutterPlugin.h>)
-#import <webview_flutter/FLTWebViewFlutterPlugin.h>
+#if __has_include(<webview_flutter_full/FLTWebViewFlutterPlugin.h>)
+#import <webview_flutter_full/FLTWebViewFlutterPlugin.h>
 #else
-@import webview_flutter;
+@import webview_flutter_full;
 #endif
 
 @implementation GeneratedPluginRegistrant
